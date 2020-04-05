@@ -85,35 +85,45 @@ fn merge_in(json_value: &mut Value, json_pointer: &str, new_json_value: Value) -
     fields.remove(0);
     let next_fields = fields;
 
-    if let Value::Null = json_value {
-        *json_value = match first_field.parse::<usize>().ok() {
-            Some(_) => Value::Array(Vec::default()),
-            None => Value::Object(Map::default()),
-        }
-        .into();
+    // if json_pointer = "/"
+    if first_field == "" {
+        json_value.merge(new_json_value);
+        return;
     }
+
     match json_value.pointer_mut(format!("/{}", first_field).as_str()) {
-        Some(json_target) => {
+        // Find the field and the json_value_targeted.
+        Some(json_targeted) => {
             if 0 < next_fields.len() {
                 merge_in(
-                    json_target,
+                    json_targeted,
                     format!("/{}", next_fields.join("/")).as_ref(),
                     new_json_value,
                 );
             } else {
-                json_target.merge(new_json_value);
+                json_targeted.merge(new_json_value);
             }
         }
+        // Not find the field and the json_value_targeted.
+        // Add the new field and retry the merge_in with same parameters.
         None => {
-            if 0 < next_fields.len() {
-                merge_in(
-                    &mut Value::default(),
-                    format!("/{}", next_fields.join("/")).as_ref(),
-                    new_json_value,
-                );
-            } else {
-                json_value.merge(new_json_value);
-            }
+            let new_value = match first_field.parse::<usize>().ok() {
+                Some(position) => {
+                    let mut vec = Vec::default();
+                    match vec.get(position) {
+                        Some(_) => vec.insert(position, Value::default()),
+                        None => vec.push(Value::default()),
+                    }
+                    Value::Array(vec)
+                }
+                None => {
+                    let mut map = Map::default();
+                    map.insert(first_field.to_string(), Value::default());
+                    Value::Object(map)
+                }
+            };
+            json_value.merge(new_value);
+            merge_in(json_value, json_pointer, new_json_value);
         }
     };
 }
@@ -186,5 +196,33 @@ mod serde_json_value_updater_test {
         let value_b: Value = serde_json::from_str(r#"{"b":"c"}"#).unwrap();
         value_a.merge_in("/my_array/1", value_b.clone());
         assert_eq!(r#"{"my_array":[{"a":"t"},{"b":"c"}]}"#, value_a.to_string());
+    }
+    #[test]
+    fn it_should_build_new_object() {
+        let mut object: Value = Value::default();
+        object.merge_in("/field", Value::String("value".to_string()));
+        object.merge_in("/object", Value::Object(Map::default()));
+        object.merge_in("/array", Value::Array(Vec::default()));
+        assert_eq!(
+            r#"{"array":[],"field":"value","object":{}}"#,
+            object.to_string()
+        );
+    }
+    #[test]
+    fn it_should_merge_in_root_array() {
+        let mut json_value: Value = serde_json::from_str(r#"["value"]"#).unwrap();
+        let json_value_to_merge: Value = serde_json::from_str(r#"["new_value"]"#).unwrap();
+        json_value.merge_in("/", json_value_to_merge);
+        assert_eq!(r#"["value","new_value"]"#, json_value.to_string());
+    }
+    #[test]
+    fn it_should_merge_in_root_object() {
+        let mut json_value: Value = serde_json::from_str(r#"{"field":"value"}"#).unwrap();
+        let json_value_to_merge: Value = serde_json::from_str(r#"{"field2":"value2"}"#).unwrap();
+        json_value.merge_in("/", json_value_to_merge);
+        assert_eq!(
+            r#"{"field":"value","field2":"value2"}"#,
+            json_value.to_string()
+        );
     }
 }

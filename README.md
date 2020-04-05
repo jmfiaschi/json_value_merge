@@ -24,7 +24,7 @@ use json_value_merge::Merge;
     let mut first_json_value: Value = serde_json::from_str(r#"["a","b"]"#).unwrap();
     let secound_json_value: Value = serde_json::from_str(r#"["b","c"]"#).unwrap();
     first_json_value.merge(secound_json_value);
-    assert_eq!(r#"["a","b","c"]"#, first_json_value.to_string());    
+    assert_eq!(r#"["a","b","c"]"#, first_json_value.to_string());
 }
 ```
 
@@ -78,60 +78,90 @@ use json_value_merge::Merge;
 }
 ```
 
+Build new object:
+
+```rust
+extern crate json_value_merge;
+
+use json_value_merge::Merge;
+
+{
+    let mut object: Value = Value::default();
+    object.merge_in("/field", Value::String("value".to_string()));
+    object.merge_in("/object", Value::Object(Map::default()));
+    object.merge_in("/array", Value::Array(Vec::default()));
+    assert_eq!(
+        r#"{"array":[],"field":"value","object":{}}"#,
+        object.to_string()
+    );
+}
+```
+
 ## Bench
 
 ```Bash
 Merge/Bench json_value.merge(null).
-                        time:   [8.5834 ns 8.9230 ns 9.2797 ns]
-                        change: [-3.5199% -1.0551% +1.6214%] (p = 0.44 > 0.05)
+                        time:   [7.7932 ns 7.8098 ns 7.8353 ns]
+                        change: [-0.2730% +0.4027% +1.0706%] (p = 0.25 > 0.05)
                         No change in performance detected.
-Found 13 outliers among 100 measurements (13.00%)
-  3 (3.00%) high mild
-  10 (10.00%) high severe
+Found 11 outliers among 100 measurements (11.00%)
+  4 (4.00%) high mild
+  7 (7.00%) high severe
 
 Merge/Bench json_value.merge(string).
-                        time:   [50.644 ns 51.480 ns 52.560 ns]
-                        change: [-0.0573% +2.5336% +4.9260%] (p = 0.05 > 0.05)
+                        time:   [45.939 ns 45.988 ns 46.049 ns]
+                        change: [-0.6558% +0.1228% +0.8434%] (p = 0.76 > 0.05)
                         No change in performance detected.
-Found 7 outliers among 100 measurements (7.00%)
-  2 (2.00%) high mild
-  5 (5.00%) high severe
-
-Merge/Bench json_value.merge(array).
-                        time:   [535.83 us 558.26 us 577.65 us]
-                        change: [-12.646% -5.3659% +1.7625%] (p = 0.16 > 0.05)
-                        No change in performance detected.
-
-Merge/Bench json_value.merge(object).
-                        time:   [341.14 ns 352.63 ns 364.50 ns]
-                        change: [-7.2561% -2.8396% +1.7016%] (p = 0.23 > 0.05)
-                        No change in performance detected.
-Found 21 outliers among 100 measurements (21.00%)
-  9 (9.00%) high mild
+Found 15 outliers among 100 measurements (15.00%)
+  3 (3.00%) high mild
   12 (12.00%) high severe
 
-Merge in/Bench json_value.merge_in(pointer, null).
-                        time:   [261.30 ns 265.50 ns 270.18 ns]
-Found 9 outliers among 100 measurements (9.00%)
-  6 (6.00%) high mild
+Merge/Bench json_value.merge(array).
+                        time:   [500.95 us 535.75 us 567.63 us]
+                        change: [-0.9322% +6.6158% +14.919%] (p = 0.10 > 0.05)
+                        No change in performance detected.
+Found 5 outliers among 100 measurements (5.00%)
+  5 (5.00%) high mild
+
+Merge/Bench json_value.merge(object).
+                        time:   [314.60 ns 316.69 ns 318.88 ns]
+                        change: [+1.4743% +2.7929% +3.8830%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+Found 10 outliers among 100 measurements (10.00%)
+  7 (7.00%) high mild
   3 (3.00%) high severe
 
+Merge in/Bench json_value.merge_in(pointer, null).
+                        time:   [295.13 ns 297.23 ns 299.74 ns]
+                        change: [-8.4767% -7.5709% -6.5915%] (p = 0.00 < 0.05)
+                        Performance has improved.
+Found 10 outliers among 100 measurements (10.00%)
+  6 (6.00%) high mild
+  4 (4.00%) high severe
+
 Merge in/Bench json_value.merge_in(pointer, string).
-                        time:   [296.51 ns 301.07 ns 305.53 ns]
+                        time:   [338.77 ns 342.75 ns 347.36 ns]
+                        change: [-8.2556% -6.5970% -5.2257%] (p = 0.00 < 0.05)
+                        Performance has improved.
+Found 11 outliers among 100 measurements (11.00%)
+  5 (5.00%) high mild
+  6 (6.00%) high severe
+
+Merge in/Bench json_value.merge_in(pointer, object).
+                        time:   [651.13 ns 652.80 ns 654.73 ns]
+                        change: [-0.5400% +1.0663% +3.3065%] (p = 0.32 > 0.05)
+                        No change in performance detected.
+Found 11 outliers among 100 measurements (11.00%)
+  4 (4.00%) high mild
+  7 (7.00%) high severe
+
+Merge in/Bench json_value.merge_in(pointer, array).
+                        time:   [435.32 ns 437.06 ns 438.97 ns]
+                        change: [-2.9152% -2.3497% -1.7253%] (p = 0.00 < 0.05)
+                        Performance has improved.
 Found 10 outliers among 100 measurements (10.00%)
   8 (8.00%) high mild
   2 (2.00%) high severe
-
-Merge in/Bench json_value.merge_in(pointer, object).
-                        time:   [618.46 ns 634.22 ns 656.36 ns]
-Found 1 outliers among 100 measurements (1.00%)
-  1 (1.00%) high severe
-
-Merge in/Bench json_value.merge_in(pointer, array).
-                        time:   [409.86 ns 410.32 ns 410.84 ns]
-Found 16 outliers among 100 measurements (16.00%)
-  7 (7.00%) high mild
-  9 (9.00%) high severe
 ```
 
 ## Contributing

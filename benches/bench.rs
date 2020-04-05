@@ -37,12 +37,12 @@ fn merge_in(c: &mut Criterion) {
 
     let mut json_value: Value = serde_json::from_str(r#"{"field":"value"}"#).unwrap();
     group.bench_function("Bench json_value.merge_in(pointer, null).", |b| {
-        b.iter(|| black_box(json_value.merge_in("/", Value::Null)))
+        b.iter(|| black_box(json_value.merge_in("/field", Value::Null)))
     });
 
     let mut json_value: Value = serde_json::from_str(r#"{"field":"value"}"#).unwrap();
     group.bench_function("Bench json_value.merge_in(pointer, string).", |b| {
-        b.iter(|| black_box(json_value.merge_in("/", Value::String("new value".to_string()))))
+        b.iter(|| black_box(json_value.merge_in("/field", Value::String("new value".to_string()))))
     });
 
     let mut json_value: Value = serde_json::from_str(r#"{"field":"value"}"#).unwrap();
@@ -51,7 +51,7 @@ fn merge_in(c: &mut Criterion) {
             black_box({
                 let json_value_to_merge: Value =
                     serde_json::from_str(r#"{"new_field":"new_value"}"#).unwrap();
-                json_value.merge_in("/", json_value_to_merge);
+                json_value.merge_in("/field", json_value_to_merge);
             })
         })
     });
@@ -61,7 +61,7 @@ fn merge_in(c: &mut Criterion) {
         b.iter(|| {
             black_box({
                 let json_value_to_merge: Value = serde_json::from_str(r#"["new_value"]"#).unwrap();
-                json_value.merge_in("/", json_value_to_merge);
+                json_value.merge_in("/0", json_value_to_merge);
             })
         })
     });
