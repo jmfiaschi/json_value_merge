@@ -225,4 +225,14 @@ mod serde_json_value_updater_test {
             json_value.to_string()
         );
     }
+    #[test]
+    fn it_should_merge_null_in_specifique_path() {
+        let mut json_value: Value = serde_json::from_str(r#"{"field":{"child":"value"}}"#).unwrap();
+        let json_value_null: Value = Value::Null;
+        json_value.merge_in("/field", json_value_null);
+        assert_eq!(
+            r#"{"field":null}"#,
+            json_value.to_string()
+        );
+    }
 }
