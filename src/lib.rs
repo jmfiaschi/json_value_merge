@@ -5,56 +5,99 @@ use serde_json::{Map, Value};
 /// Trait used to merge Json Values
 pub trait Merge {
     /// Method use to merge two Json Values : ValueA <- ValueB.
-    ///
-    /// # Examples:
-    /// ```ignore
-    /// use serde_json::Value;
-    ///
-    /// let mut first_json_value: Value = serde_json::from_str(r#"["a","b"]"#).unwrap();
-    /// let secound_json_value: Value = serde_json::from_str(r#"["b","c"]"#).unwrap();
-    /// first_json_value.merge(secound_json_value);
-    /// assert_eq!(r#"["a","b","c"]"#, first_json_value.to_string());
-    ///
-    /// OR
-    ///
-    /// let mut first_json_value: Value =
-    /// serde_json::from_str(r#"{"value1":"a","value2":"b"}"#).unwrap();
-    /// let secound_json_value: Value =
-    ///     serde_json::from_str(r#"{"value1":"a","value2":"c","value3":"d"}"#).unwrap();
-    /// first_json_value.merge(secound_json_value);
-    /// assert_eq!(
-    ///     r#"{"value1":"a","value2":"c","value3":"d"}"#,
-    ///     first_json_value.to_string()
-    /// );
-    /// ```
     fn merge(&mut self, new_json_value: Value);
-    /// Merge a new value in specific json pointer
-    ///
-    /// # Examples:
-    /// ```ignore
-    /// use serde_json::Value;
-    ///
-    /// let mut value_a: Value = serde_json::from_str(r#"{"my_array":[{"a":"t"}]}"#).unwrap();
-    /// let value_b: Value = serde_json::from_str(r#"["b","c"]"#).unwrap();
-    /// value_a.merge_in("/my_array", value_b.clone());
-    /// assert_eq!(r#"{"my_array":[{"a":"t"},"b","c"]}"#, value_a.to_string());
-    ///
-    /// OR
-    ///
-    /// let mut value_a: Value = serde_json::from_str(r#"{"my_array":[{"a":"t"}]}"#).unwrap();
-    /// let value_b: Value = serde_json::from_str(r#"{"b":"c"}"#).unwrap();
-    /// value_a.merge_in("/my_array/0/a", value_b.clone());
-    /// assert_eq!(r#"{"my_array":[{"a":{"b":"c"}}]}"#, value_a.to_string());
-    /// ```
+    /// Merge a new value in specific json pointer.
     fn merge_in(&mut self, json_pointer: &str, new_json_value: Value);
 }
 
 impl Merge for serde_json::Value {
+    /// # Examples: Merge two array together.
+    /// ```
+    /// use serde_json::Value;
+    /// use json_value_merge::Merge;
+    ///
+    /// let mut array1: Value = serde_json::from_str(r#"["a","b"]"#).unwrap();
+    /// let array2: Value = serde_json::from_str(r#"["b","c"]"#).unwrap();
+    /// array1.merge(array2);
+    /// assert_eq!(r#"["a","b","c"]"#, array1.to_string());
+    /// ```
+    /// # Examples: Merge two objects together.
+    /// ```
+    /// use serde_json::Value;
+    /// use json_value_merge::Merge;
+    ///
+    /// let mut object1: Value = serde_json::from_str(r#"{"value1":"a","value2":"b"}"#).unwrap();
+    /// let object2: Value = serde_json::from_str(r#"{"value1":"a","value2":"c","value3":"d"}"#).unwrap();
+    /// object1.merge(object2);
+    /// assert_eq!(r#"{"value1":"a","value2":"c","value3":"d"}"#,object1.to_string());
+    /// ```
+    /// # Examples: Merge an object into an array.
+    /// ```
+    /// use serde_json::Value;
+    /// use json_value_merge::Merge;
+    ///
+    /// let mut array: Value = serde_json::from_str(r#"[]"#).unwrap();
+    /// let object: Value = serde_json::from_str(r#"{"field1":"value1"}"#).unwrap();
+    /// array.merge(object);
+    /// assert_eq!(r#"[{"field1":"value1"}]"#,array.to_string());
+    /// ```
+    /// # Examples: Merge an array into an object.
+    /// ```
+    /// use serde_json::Value;
+    /// use json_value_merge::Merge;
+    ///
+    /// let mut object: Value = serde_json::from_str(r#"{"field1":"value1"}"#).unwrap();
+    /// let array: Value = serde_json::from_str(r#"["value2","value3"]"#).unwrap();
+    /// object.merge(array);
+    /// assert_eq!(r#"["value2","value3"]"#,object.to_string());
+    /// ```
     fn merge(&mut self, new_json_value: Value) {
         merge(self, &new_json_value);
     }
+    /// # Examples: Merge an array in an object in a specific position.
+    /// ```
+    /// use serde_json::Value;
+    /// use json_value_merge::Merge;
+    ///
+    /// let mut object: Value = serde_json::from_str(r#"{"my_array":[{"a":"t"}]}"#).unwrap();
+    /// let array: Value = serde_json::from_str(r#"["b","c"]"#).unwrap();
+    /// object.merge_in("/my_array", array.clone());
+    /// assert_eq!(r#"{"my_array":[{"a":"t"},"b","c"]}"#, object.to_string());
+    /// ```
+    /// # Examples: Merge two objects together in a specific position.
+    /// ```
+    /// use serde_json::Value;
+    /// use json_value_merge::Merge;
+    ///
+    /// let mut object1: Value = serde_json::from_str(r#"{"my_array":[{"a":"t"}]}"#).unwrap();
+    /// let object2: Value = serde_json::from_str(r#"{"b":"c"}"#).unwrap();
+    /// object1.merge_in("/my_array/0/a", object2.clone());
+    /// assert_eq!(r#"{"my_array":[{"a":{"b":"c"}}]}"#, object1.to_string());
+    /// ```
+    /// # Examples: Merge an object in an array in a specific position.
+    /// ```
+    /// use serde_json::Value;
+    /// use json_value_merge::Merge;
+    ///
+    /// let mut json_value: Value = serde_json::from_str(r#"[{"array1":[{"field":"value1"}]}]"#).unwrap();
+    /// json_value.merge_in("/other_field", Value::String("value".to_string()));
+    /// assert_eq!(r#"[{"array1":[{"field":"value1"}]},{"other_field":"value"}]"#,json_value.to_string());
+    /// ```
+    /// # Examples: Build a new object.
+    /// ```
+    /// use serde_json::{Map,Value};
+    /// use json_value_merge::Merge;
+    ///
+    /// let mut object: Value = Value::default();
+    /// object.merge_in("/field", Value::String("value".to_string()));
+    /// object.merge_in("/object", Value::Object(Map::default()));
+    /// object.merge_in("/array", Value::Array(Vec::default()));
+    /// assert_eq!(r#"{"array":[],"field":"value","object":{}}"#,object.to_string());
+    /// ```
     fn merge_in(&mut self, json_pointer: &str, new_json_value: Value) {
-        merge_in(self, json_pointer, new_json_value);
+        let fields: Vec<&str> = json_pointer.split("/").skip(1).collect();
+
+        merge_in(self, fields, new_json_value);
     }
 }
 
@@ -79,27 +122,23 @@ fn merge(a: &mut Value, b: &Value) {
     }
 }
 
-fn merge_in(json_value: &mut Value, json_pointer: &str, new_json_value: Value) -> () {
-    let mut fields: Vec<&str> = json_pointer.split("/").skip(1).collect();
-    let first_field = fields[0].clone();
-    fields.remove(0);
-    let next_fields = fields;
-
-    // if json_pointer = "/"
-    if first_field == "" {
-        json_value.merge(new_json_value);
-        return;
+fn merge_in(json_value: &mut Value, fields: Vec<&str>, new_json_value: Value) -> () {
+    if fields.is_empty() {
+        return json_value.merge(new_json_value);
     }
 
-    match json_value.pointer_mut(format!("/{}", first_field).as_str()) {
+    let mut fields = fields.clone();
+    let field = fields.remove(0);
+
+    if field == "" {
+        return json_value.merge(new_json_value);
+    }
+
+    match json_value.pointer_mut(format!("/{}", field).as_str()) {
         // Find the field and the json_value_targeted.
         Some(json_targeted) => {
-            if 0 < next_fields.len() {
-                merge_in(
-                    json_targeted,
-                    format!("/{}", next_fields.join("/")).as_ref(),
-                    new_json_value,
-                );
+            if 0 < fields.len() {
+                merge_in(json_targeted, fields, new_json_value);
             } else {
                 json_targeted.merge(new_json_value);
             }
@@ -107,7 +146,7 @@ fn merge_in(json_value: &mut Value, json_pointer: &str, new_json_value: Value) -
         // Not find the field and the json_value_targeted.
         // Add the new field and retry the merge_in with same parameters.
         None => {
-            let new_value = match first_field.parse::<usize>().ok() {
+            let new_value = match field.parse::<usize>().ok() {
                 Some(position) => {
                     let mut vec = Vec::default();
                     match vec.get(position) {
@@ -118,12 +157,26 @@ fn merge_in(json_value: &mut Value, json_pointer: &str, new_json_value: Value) -
                 }
                 None => {
                     let mut map = Map::default();
-                    map.insert(first_field.to_string(), Value::default());
+                    map.insert(field.to_string(), Value::default());
                     Value::Object(map)
                 }
             };
-            json_value.merge(new_value);
-            merge_in(json_value, json_pointer, new_json_value);
+
+            match (json_value.clone(), new_value.clone()) {
+                (Value::Array(vec), Value::Object(_)) => {
+                    json_value.merge(new_value.clone());
+                    let size = vec.len().to_string();
+                    let mut new_fields: Vec<&str> = vec![&size, field];
+                    new_fields.append(&mut fields.clone());
+                    merge_in(json_value, new_fields, new_json_value);
+                }
+                (_, _) => {
+                    let mut new_fields: Vec<&str> = vec![field];
+                    new_fields.append(&mut fields.clone());
+                    json_value.merge(new_value.clone());
+                    merge_in(json_value, new_fields, new_json_value);
+                }
+            }
         }
     };
 }
@@ -198,17 +251,6 @@ mod serde_json_value_updater_test {
         assert_eq!(r#"{"my_array":[{"a":"t"},{"b":"c"}]}"#, value_a.to_string());
     }
     #[test]
-    fn it_should_build_new_object() {
-        let mut object: Value = Value::default();
-        object.merge_in("/field", Value::String("value".to_string()));
-        object.merge_in("/object", Value::Object(Map::default()));
-        object.merge_in("/array", Value::Array(Vec::default()));
-        assert_eq!(
-            r#"{"array":[],"field":"value","object":{}}"#,
-            object.to_string()
-        );
-    }
-    #[test]
     fn it_should_merge_in_root_array() {
         let mut json_value: Value = serde_json::from_str(r#"["value"]"#).unwrap();
         let json_value_to_merge: Value = serde_json::from_str(r#"["new_value"]"#).unwrap();
@@ -230,9 +272,6 @@ mod serde_json_value_updater_test {
         let mut json_value: Value = serde_json::from_str(r#"{"field":{"child":"value"}}"#).unwrap();
         let json_value_null: Value = Value::Null;
         json_value.merge_in("/field", json_value_null);
-        assert_eq!(
-            r#"{"field":null}"#,
-            json_value.to_string()
-        );
+        assert_eq!(r#"{"field":null}"#, json_value.to_string());
     }
 }

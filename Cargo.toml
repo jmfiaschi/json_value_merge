@@ -1,13 +1,13 @@
 [package]
 name = "json_value_merge"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Jean-Marc Fiaschi <jm.fiaschi@gmail.com>"]
 edition = "2018"
 description = "Interface to merge serde_json::Value."
 license = "MIT OR Apache-2.0"
 include = ["src/*","benches/*","Cargo.toml","LICENCE-APACHE","LICENCE-MIT"]
 repository = "https://github.com/jmfiaschi/json_value_merge"
-keywords = ["serde", "json", "value", "merge","path"]
+keywords = ["serde", "json", "value", "merge", "path"]
 readme = "README.md"
 categories = ["encoding"]
 
