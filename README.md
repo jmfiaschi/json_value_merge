@@ -1,7 +1,7 @@
 # json_value_merge
 
-[![Linter](https://github.com/jmfiaschi/json_value_merge/workflows/Lint/badge.svg)](https://github.com/jmfiaschi/json_value_merge/actions)
-[![Actions Status](https://github.com/jmfiaschi/json_value_merge/workflows/CI/badge.svg)](https://github.com/jmfiaschi/json_value_merge/actions)
+[![Linter](https://github.com/jmfiaschi/json_value_merge/workflows/Lint/badge.svg)](https://github.com/jmfiaschi/json_value_merge/actions/workflows/lint.yml)
+[![Actions Status](https://github.com/jmfiaschi/json_value_merge/workflows/CI/badge.svg)](https://github.com/jmfiaschi/json_value_merge/actions/workflows/ci.yml)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
 Give an interface to merge two json_serde::Value together.
@@ -10,7 +10,7 @@ Give an interface to merge two json_serde::Value together.
 
  ```Toml
 [dependencies]
-json_value_merge = "0.2"
+json_value_merge = "1.0"
 ```
 
 ## Usage
