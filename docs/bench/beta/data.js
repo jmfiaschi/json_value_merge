@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1630529517779,
+  "lastUpdate": 1630531151299,
   "repoUrl": "https://github.com/jmfiaschi/json_value_merge",
   "entries": {
     "Benchmark": [
@@ -191,6 +191,54 @@ window.BENCHMARK_DATA = {
             "name": "Merge/merge_object",
             "value": 248,
             "range": "± 15",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "jm.fiaschi@gmail.com",
+            "name": "jmfiaschi",
+            "username": "jmfiaschi"
+          },
+          "committer": {
+            "email": "jm.fiaschi@gmail.com",
+            "name": "jmfiaschi",
+            "username": "jmfiaschi"
+          },
+          "distinct": true,
+          "id": "38ae8e0c659894571e32a474cd66b536c0e10786",
+          "message": "feat(project): force semantic & fix readme",
+          "timestamp": "2021-09-01T23:15:49+02:00",
+          "tree_id": "de04503856f3d06b4b5c992cd9d35e2193a3e6ce",
+          "url": "https://github.com/jmfiaschi/json_value_merge/commit/38ae8e0c659894571e32a474cd66b536c0e10786"
+        },
+        "date": 1630531150746,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "Merge/merge_null",
+            "value": 7,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "Merge/merge_string",
+            "value": 36,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "Merge/merge_array",
+            "value": 358969,
+            "range": "± 90837",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "Merge/merge_object",
+            "value": 210,
+            "range": "± 0",
             "unit": "ns/iter"
           }
         ]
