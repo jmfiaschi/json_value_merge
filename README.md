@@ -101,7 +101,7 @@ use json_value_merge::Merge;
 
 ## Useful link
 
-* [Benchmark report](https://jmfiaschi.github.io/json_value_merge/bench/master/)
+* [Benchmark report](https://jmfiaschi.github.io/json_value_merge/bench/main/)
 
 ## Contributing
 
