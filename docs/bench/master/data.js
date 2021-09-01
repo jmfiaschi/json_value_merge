@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1630528502812,
+  "lastUpdate": 1630529405867,
   "repoUrl": "https://github.com/jmfiaschi/json_value_merge",
   "entries": {
     "Benchmark": [
@@ -47,6 +47,54 @@ window.BENCHMARK_DATA = {
             "name": "Merge/merge_object",
             "value": 245,
             "range": "± 11",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "jm.fiaschi@gmail.com",
+            "name": "jm.fiaschi",
+            "username": "jmfiaschi"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "715789b7372ea08fcf1402381f08f1cc29e8fb56",
+          "message": "doc(readme): add semantic badge (#6)",
+          "timestamp": "2021-09-01T22:46:58+02:00",
+          "tree_id": "82c17ab0b861279ff58a60075398e937fa1aabf1",
+          "url": "https://github.com/jmfiaschi/json_value_merge/commit/715789b7372ea08fcf1402381f08f1cc29e8fb56"
+        },
+        "date": 1630529405302,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "Merge/merge_null",
+            "value": 8,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "Merge/merge_string",
+            "value": 40,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "Merge/merge_array",
+            "value": 393444,
+            "range": "± 99538",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "Merge/merge_object",
+            "value": 237,
+            "range": "± 0",
             "unit": "ns/iter"
           }
         ]
