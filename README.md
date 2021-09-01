@@ -102,6 +102,7 @@ use json_value_merge::Merge;
 ## Useful link
 
 * [Benchmark report](https://jmfiaschi.github.io/json_value_merge/bench/main/)
+* [Package](https://crates.io/crates/json_value_merge)
 
 ## Contributing
 
