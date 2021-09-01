@@ -95,7 +95,7 @@ impl Merge for serde_json::Value {
     /// assert_eq!(r#"{"array":[],"field":"value","object":{}}"#,object.to_string());
     /// ```
     fn merge_in(&mut self, json_pointer: &str, new_json_value: Value) {
-        let fields: Vec<&str> = json_pointer.split("/").skip(1).collect();
+        let fields: Vec<&str> = json_pointer.split('/').skip(1).collect();
 
         merge_in(self, fields, new_json_value);
     }
@@ -122,7 +122,7 @@ fn merge(a: &mut Value, b: &Value) {
     }
 }
 
-fn merge_in(json_value: &mut Value, fields: Vec<&str>, new_json_value: Value) -> () {
+fn merge_in(json_value: &mut Value, fields: Vec<&str>, new_json_value: Value) {
     if fields.is_empty() {
         return json_value.merge(new_json_value);
     }
@@ -130,14 +130,14 @@ fn merge_in(json_value: &mut Value, fields: Vec<&str>, new_json_value: Value) ->
     let mut fields = fields.clone();
     let field = fields.remove(0);
 
-    if field == "" {
+    if field.is_empty() {
         return json_value.merge(new_json_value);
     }
 
     match json_value.pointer_mut(format!("/{}", field).as_str()) {
         // Find the field and the json_value_targeted.
         Some(json_targeted) => {
-            if 0 < fields.len() {
+            if !fields.is_empty() {
                 merge_in(json_targeted, fields, new_json_value);
             } else {
                 json_targeted.merge(new_json_value);
@@ -164,7 +164,7 @@ fn merge_in(json_value: &mut Value, fields: Vec<&str>, new_json_value: Value) ->
 
             match (json_value.clone(), new_value.clone()) {
                 (Value::Array(vec), Value::Object(_)) => {
-                    json_value.merge(new_value.clone());
+                    json_value.merge(new_value);
                     let size = vec.len().to_string();
                     let mut new_fields: Vec<&str> = vec![&size, field];
                     new_fields.append(&mut fields.clone());
@@ -173,7 +173,7 @@ fn merge_in(json_value: &mut Value, fields: Vec<&str>, new_json_value: Value) ->
                 (_, _) => {
                     let mut new_fields: Vec<&str> = vec![field];
                     new_fields.append(&mut fields.clone());
-                    json_value.merge(new_value.clone());
+                    json_value.merge(new_value);
                     merge_in(json_value, new_fields, new_json_value);
                 }
             }
