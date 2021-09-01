@@ -10,7 +10,7 @@ Give an interface to merge two json_serde::Value together.
 
  ```Toml
 [dependencies]
-json_value_merge = "0.1"
+json_value_merge = "0.2"
 ```
 
 ## Usage
