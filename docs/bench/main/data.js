@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1630531558664,
+  "lastUpdate": 1630531995764,
   "repoUrl": "https://github.com/jmfiaschi/json_value_merge",
   "entries": {
     "Benchmark": [
@@ -94,6 +94,54 @@ window.BENCHMARK_DATA = {
           {
             "name": "Merge/merge_object",
             "value": 218,
+            "range": "± 0",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "jm.fiaschi@gmail.com",
+            "name": "jm.fiaschi",
+            "username": "jmfiaschi"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "705b5521ec5ad9b54ebc8e9ede0f376d7f49a645",
+          "message": "feat(project): add semantic release conf",
+          "timestamp": "2021-09-01T23:29:21+02:00",
+          "tree_id": "328e8b791aad9f83835daae47d780610c064095a",
+          "url": "https://github.com/jmfiaschi/json_value_merge/commit/705b5521ec5ad9b54ebc8e9ede0f376d7f49a645"
+        },
+        "date": 1630531995232,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "Merge/merge_null",
+            "value": 8,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "Merge/merge_string",
+            "value": 40,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "Merge/merge_array",
+            "value": 392985,
+            "range": "± 99806",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "Merge/merge_object",
+            "value": 237,
             "range": "± 0",
             "unit": "ns/iter"
           }
