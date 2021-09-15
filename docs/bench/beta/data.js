@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1630531962228,
+  "lastUpdate": 1631737437151,
   "repoUrl": "https://github.com/jmfiaschi/json_value_merge",
   "entries": {
     "Benchmark": [
@@ -383,6 +383,54 @@ window.BENCHMARK_DATA = {
             "name": "Merge/merge_object",
             "value": 277,
             "range": "± 21",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "jm.fiaschi@gmail.com",
+            "name": "jmfiaschi",
+            "username": "jmfiaschi"
+          },
+          "committer": {
+            "email": "jm.fiaschi@gmail.com",
+            "name": "jmfiaschi",
+            "username": "jmfiaschi"
+          },
+          "distinct": true,
+          "id": "560ea124b002ac86159c2f5d39dfd75ff626b62c",
+          "message": "feat(merge_in): fix bench & clean the code & add complex merge in bench",
+          "timestamp": "2021-09-15T22:15:05+02:00",
+          "tree_id": "58950e67b4b6aad903dd9e55659e8badbf9f41db",
+          "url": "https://github.com/jmfiaschi/json_value_merge/commit/560ea124b002ac86159c2f5d39dfd75ff626b62c"
+        },
+        "date": 1631737436596,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "Merge/merge_null",
+            "value": 36,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "Merge/merge_string",
+            "value": 76,
+            "range": "± 4",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "Merge/merge_array",
+            "value": 352,
+            "range": "± 16",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "Merge/merge_object",
+            "value": 304,
+            "range": "± 23",
             "unit": "ns/iter"
           }
         ]
