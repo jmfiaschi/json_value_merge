@@ -108,7 +108,8 @@ impl Merge for serde_json::Value {
     /// object.merge_in("/1", Value::Object(Map::default()));
     /// object.merge_in("/array/1", Value::Object(Map::default()));
     /// object.merge_in("/array/2", Value::Array(Vec::default()));
-    /// assert_eq!(r#"{"1":{},"array":[{},[]],"field":"value","object":{}}"#,object.to_string());
+    /// object.merge_in("/array/*", Value::String("wildcard".to_string()));
+    /// assert_eq!(r#"{"1":{},"array":[{},[],"wildcard"],"field":"value","object":{}}"#,object.to_string());
     /// ```
     fn merge_in(&mut self, json_pointer: &str, new_json_value: Value) -> io::Result<()> {
         let fields: Vec<&str> = json_pointer.split('/').skip(1).collect();
@@ -159,10 +160,14 @@ fn merge_in(json_value: &mut Value, fields: Vec<&str>, new_json_value: Value) ->
     //  - Result: raise an error
     //
     // The json pointer pattern for merging value into an array, should be:
-    // - /0/field_2
-    // - /
+    // - /[0-9]+/field_2 => try to override a specific position if exist or add if not
+    // - / or /* => automaticaly add to the stack
     match (&json_value, field.parse::<usize>().ok()) {
-        (Value::Array(_), None) => return Err(io::Error::new(io::ErrorKind::NotFound, format!("The field '{}' can't be found or created in this array '{}'. Change the json pointer pattern.", field, &json_value.to_string()))),
+        (Value::Array(_), None) => {
+            if field != "*"  {
+                return Err(io::Error::new(io::ErrorKind::NotFound, format!("The field '{}' can't be found or created in this array '{}'. Change the json pointer pattern.", field, &json_value.to_string())))
+            }
+        },
         (_,_) => ()
     };
 
