@@ -104,12 +104,25 @@ impl Merge for serde_json::Value {
     /// let mut object: Value = Value::default();
     /// object.merge_in("/field", Value::String("value".to_string()));
     /// object.merge_in("/object", Value::Object(Map::default()));
-    /// object.merge_in("/array", Value::Array(Vec::default()));
-    /// object.merge_in("/1", Value::Object(Map::default()));
     /// object.merge_in("/array/1", Value::Object(Map::default()));
     /// object.merge_in("/array/2", Value::Array(Vec::default()));
     /// object.merge_in("/array/*", Value::String("wildcard".to_string()));
-    /// assert_eq!(r#"{"1":{},"array":[{},[],"wildcard"],"field":"value","object":{}}"#,object.to_string());
+    /// object.merge_in("/root/*/item", Value::String("my_item".to_string()));
+    /// object.merge_in("///empty", Value::Null);
+    /// assert_eq!(r#"{"":{"":{"empty":null}},"array":[{},[],"wildcard"],"field":"value","object":{},"root":[{"item":"my_item"}]}"#, object.to_string());
+    /// ```
+    /// # Examples: Search and replace
+    /// ```
+    /// use serde_json::{Map,Value};
+    /// use json_value_merge::Merge;
+    ///
+    /// let mut object: Value = serde_json::from_str(r#"{"":{"":{"empty":null}},"array":[{},[],"wildcard"],"field":"value","1":null,"root":[{"item":"my_item"}]}"#).unwrap();
+    /// 
+    /// object.merge_in("/field", Value::String("my_new_value".to_string()));
+    /// object.merge_in("/1", Value::String("first field".to_string()));
+    /// object.merge_in("/array/2", Value::String("position two".to_string()));
+    /// object.merge_in("///empty", Value::String("not_item".to_string()));
+    /// assert_eq!(r#"{"":{"":{"empty":"not_item"}},"1":"first field","array":[{},[],"position two"],"field":"my_new_value","root":[{"item":"my_item"}]}"#, object.to_string());
     /// ```
     fn merge_in(&mut self, json_pointer: &str, new_json_value: Value) -> io::Result<()> {
         let fields: Vec<&str> = json_pointer.split('/').skip(1).collect();
@@ -147,8 +160,9 @@ fn merge_in(json_value: &mut Value, fields: Vec<&str>, new_json_value: Value) ->
     let mut fields = fields.clone();
     let field = fields.remove(0);
 
-    // Controle the field
-    if field.is_empty() {
+    // Not merge if fields is not empty
+    // Useful to merge_in "/" corresponding to the root of the object
+    if field.is_empty() && fields.is_empty() {
         json_value.merge(new_json_value);
 
         return Ok(());
@@ -182,8 +196,8 @@ fn merge_in(json_value: &mut Value, fields: Vec<&str>, new_json_value: Value) ->
         }
         // The field is not find in the object
         // Create the new field and call the merge again on this new field
-        None => match json_value.clone() {
-            Value::Array(vec) => {
+        None => match (json_value.clone(), field, field.parse::<usize>().ok()) {
+            (Value::Array(vec),_,_) => {
                 json_value.merge(Value::Array(vec![Value::default()]));
 
                 let size = vec.len().to_string();
@@ -191,10 +205,28 @@ fn merge_in(json_value: &mut Value, fields: Vec<&str>, new_json_value: Value) ->
                 new_fields.append(&mut fields);
 
                 merge_in(json_value, new_fields, new_json_value)?;
-            }
+            },
+            (_,"*",_) | (_,_,Some(_)) => {
+                json_value.merge(Value::Array(vec![Value::default()]));
+
+                let mut new_fields = vec!["0"];
+                new_fields.append(&mut fields);
+
+                merge_in(json_value, new_fields, new_json_value)?;
+            },
             _ => {
                 let mut map = Map::default();
-                map.insert(field.to_string(), Value::default());
+                let mut new_field = field.to_string();
+
+                // ~0 and ~1 correspond with json pointer to ~ and /
+                if field.contains("~0") {
+                    new_field = new_field.replace("~0", "~");
+                }
+                if field.contains("~1") {
+                    new_field = new_field.replace("~1", "/");
+                }
+
+                map.insert(new_field, Value::default());
                 json_value.merge(Value::Object(map));
 
                 let mut new_fields = vec![field];
