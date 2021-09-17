@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/jmfiaschi/json_value_merge/compare/v1.0.0...v1.1.0) (2021-09-17)
+
+
+### Features
+
+* **merge_in:** fix bench & clean the code & add complex merge in bench ([#11](https://github.com/jmfiaschi/json_value_merge/issues/11)) ([7292cb6](https://github.com/jmfiaschi/json_value_merge/commit/7292cb685b3e8e8484ec2bed3f4e0ef1cc470009))
+
 # 1.0.0 (2021-09-01)
 
 
