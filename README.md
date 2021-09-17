@@ -10,7 +10,7 @@ Give an interface to merge two json_serde::Value together.
 
  ```Toml
 [dependencies]
-json_value_merge = "1.0"
+json_value_merge = "1.1"
 ```
 
 ## Usage
@@ -21,6 +21,7 @@ Merge two arrays:
 extern crate json_value_merge;
 
 use json_value_merge::Merge;
+use serde_json::Value;
 
 {
     let mut first_json_value: Value = serde_json::from_str(r#"["a","b"]"#).unwrap();
@@ -36,6 +37,7 @@ Merge two objects:
 extern crate json_value_merge;
 
 use json_value_merge::Merge;
+use serde_json::Value;
 
 {
     let mut first_json_value: Value =
@@ -44,7 +46,7 @@ use json_value_merge::Merge;
         serde_json::from_str(r#"[{"value":"b"},{"value":"c"}]"#).unwrap();
     first_json_value.merge(secound_json_value);
     assert_eq!(
-        r#"[{"value":"a"},{"value":"b"},{"value":"c"}]"#,
+        r#"[{"value":"a"},{"value":"b"},{"value":"b"},{"value":"c"}]"#,
         first_json_value.to_string()
     );
 }
@@ -56,6 +58,7 @@ Merge two arrays in a specifique position:
 extern crate json_value_merge;
 
 use json_value_merge::Merge;
+use serde_json::Value;
 
 {
     let mut value_a: Value = serde_json::from_str(r#"{"my_array":[{"a":"t"}]}"#).unwrap();
@@ -71,6 +74,7 @@ Merge two objects in a specifique position:
 extern crate json_value_merge;
 
 use json_value_merge::Merge;
+use serde_json::Value;
 
 {
     let mut value_a: Value = serde_json::from_str(r#"{"my_array":[{"a":"t"}]}"#).unwrap();
@@ -86,16 +90,39 @@ Build new object:
 extern crate json_value_merge;
 
 use json_value_merge::Merge;
+use serde_json::Value;
 
 {
     let mut object: Value = Value::default();
     object.merge_in("/field", Value::String("value".to_string()));
     object.merge_in("/object", Value::Object(Map::default()));
-    object.merge_in("/array", Value::Array(Vec::default()));
-    assert_eq!(
-        r#"{"array":[],"field":"value","object":{}}"#,
-        object.to_string()
-    );
+    object.merge_in("/array/1", Value::Object(Map::default()));
+    object.merge_in("/array/2", Value::Array(Vec::default()));
+    object.merge_in("/array/*", Value::String("wildcard".to_string()));
+    object.merge_in("/root/*/item", Value::String("my_item".to_string()));
+    object.merge_in("///empty", Value::Null);
+    assert_eq!(r#"{"":{"":{"empty":null}},"array":[{},[],"wildcard"],"field":"value","object":{},"root":[{"item":"my_item"}]}"#, object.to_string());
+}
+```
+
+Warning: If you want to build an object with key value as an number, it's not possible. The object will be an array.
+Actually impossible to have for one json pointer "/field/0" an object like "[{}]" or "{"0":{}}" in the same time.
+By default the json pointer "/field/0"  will build an object like this "[{}]".
+
+Merge an object in an array with a wrong position will generate an error.
+
+```rust
+extern crate json_value_merge;
+
+use json_value_merge::Merge;
+use serde_json::Value;
+
+{
+    let mut json_value: Value = serde_json::from_str(r#"[{"array1":[{"field":"value1"}]}]"#).unwrap();
+    let result = json_value.merge_in("/other_field", Value::String("value".to_string()));
+
+    assert!(result.is_err(), "The result should be an error because it's not possible to find or add an object in an array with a string field exept '*'");
+    assert_eq!(r#"[{"array1":[{"field":"value1"}]}]"#,json_value.to_string());
 }
 ```
 

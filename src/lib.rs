@@ -85,7 +85,7 @@ impl Merge for serde_json::Value {
     ///
     /// assert_eq!(r#"[{"array1":[{"field":"value1"}]},"value"]"#,json_value.to_string());
     /// ```
-    /// # Examples: Merge an object in an array in a wrong position and generate error
+    /// # Examples: Merge an object in an array with a wrong position will generate an error.
     /// ```
     /// use serde_json::Value;
     /// use json_value_merge::Merge;
@@ -93,7 +93,7 @@ impl Merge for serde_json::Value {
     /// let mut json_value: Value = serde_json::from_str(r#"[{"array1":[{"field":"value1"}]}]"#).unwrap();
     /// let result = json_value.merge_in("/other_field", Value::String("value".to_string()));
     ///
-    /// assert!(result.is_err(), "The result should be in error because it's not possible to find or add an object field in an array");
+    /// assert!(result.is_err(), "The result should be an error because it's not possible to find or add an object in an array with a string field exept '*'");
     /// assert_eq!(r#"[{"array1":[{"field":"value1"}]}]"#,json_value.to_string());
     /// ```
     /// # Examples: Build a new object.
