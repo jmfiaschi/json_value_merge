@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1631880420350,
+  "lastUpdate": 1638828314743,
   "repoUrl": "https://github.com/jmfiaschi/json_value_merge",
   "entries": {
     "Benchmark": [
@@ -263,6 +263,84 @@ window.BENCHMARK_DATA = {
             "name": "merge_in/deeper_object",
             "value": 15067,
             "range": "± 835",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "blitzkrieg263@gmail.com",
+            "name": "Jean-Baptiste Trystram",
+            "username": "jbtrystram"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "3b581a4c8e6b1da0c7ecfc1d5078cf634a103f95",
+          "message": "Fix a typo in liscense filenames\n\nThe license files are names `LICENSE-*` but were imported as `LICENCE-*`.",
+          "timestamp": "2021-12-06T22:57:35+01:00",
+          "tree_id": "add3afefa086e3a20f7a805a931cce097bb1f09b",
+          "url": "https://github.com/jmfiaschi/json_value_merge/commit/3b581a4c8e6b1da0c7ecfc1d5078cf634a103f95"
+        },
+        "date": 1638828313953,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "merge/null",
+            "value": 25,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "merge/string",
+            "value": 54,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "merge/array",
+            "value": 272,
+            "range": "± 24",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "merge/object",
+            "value": 248,
+            "range": "± 15",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "merge_in/null",
+            "value": 409,
+            "range": "± 18",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "merge_in/string.",
+            "value": 492,
+            "range": "± 25",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "merge_in/object",
+            "value": 595,
+            "range": "± 36",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "merge_in/array",
+            "value": 416,
+            "range": "± 26",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "merge_in/deeper_object",
+            "value": 14007,
+            "range": "± 745",
             "unit": "ns/iter"
           }
         ]
