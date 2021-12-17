@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/jmfiaschi/json_value_merge/compare/v1.1.0...v1.1.1) (2021-12-06)
+
+
+### Bug Fixes
+
+* **version:** update version and publish licenses ([59c90bd](https://github.com/jmfiaschi/json_value_merge/commit/59c90bd90099e3946a695e10ed77825b4e7f6fa5))
+
 # [1.1.0](https://github.com/jmfiaschi/json_value_merge/compare/v1.0.0...v1.1.0) (2021-09-17)
 
 
