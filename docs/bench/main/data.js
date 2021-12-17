@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1638829407374,
+  "lastUpdate": 1639779969644,
   "repoUrl": "https://github.com/jmfiaschi/json_value_merge",
   "entries": {
     "Benchmark": [
@@ -419,6 +419,84 @@ window.BENCHMARK_DATA = {
             "name": "merge_in/deeper_object",
             "value": 14721,
             "range": "± 1076",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "jm.fiaschi@gmail.com",
+            "name": "jm.fiaschi",
+            "username": "jmfiaschi"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "785df9e77659a0a2a35a5a0df3ec6e1e5675d8f0",
+          "message": "fix(cargo): update version automatically",
+          "timestamp": "2021-12-17T23:19:08+01:00",
+          "tree_id": "99c58d05a758c0b2666eeb6651b72d49adcec0b7",
+          "url": "https://github.com/jmfiaschi/json_value_merge/commit/785df9e77659a0a2a35a5a0df3ec6e1e5675d8f0"
+        },
+        "date": 1639779969224,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "merge/null",
+            "value": 27,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "merge/string",
+            "value": 58,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "merge/array",
+            "value": 271,
+            "range": "± 8",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "merge/object",
+            "value": 229,
+            "range": "± 5",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "merge_in/null",
+            "value": 393,
+            "range": "± 11",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "merge_in/string.",
+            "value": 482,
+            "range": "± 10",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "merge_in/object",
+            "value": 581,
+            "range": "± 57",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "merge_in/array",
+            "value": 422,
+            "range": "± 19",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "merge_in/deeper_object",
+            "value": 13724,
+            "range": "± 462",
             "unit": "ns/iter"
           }
         ]
