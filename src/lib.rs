@@ -6,9 +6,9 @@ use std::io;
 /// Trait used to merge Json Values
 pub trait Merge {
     /// Method use to merge two Json Values : ValueA <- ValueB.
-    fn merge(&mut self, new_json_value: Value);
+    fn merge(&mut self, new_value: &Value);
     /// Merge a new value in specific json pointer. If the field can't be merge in the specific path, it raise an error.
-    fn merge_in(&mut self, json_pointer: &str, new_json_value: Value) -> io::Result<()>;
+    fn merge_in(&mut self, json_pointer: &str, new_value: &Value) -> io::Result<()>;
 }
 
 impl Merge for serde_json::Value {
@@ -19,7 +19,7 @@ impl Merge for serde_json::Value {
     ///
     /// let mut array1: Value = serde_json::from_str(r#"["a","b"]"#).unwrap();
     /// let array2: Value = serde_json::from_str(r#"["b","c"]"#).unwrap();
-    /// array1.merge(array2);
+    /// array1.merge(&array2);
     /// assert_eq!(r#"["a","b","b","c"]"#, array1.to_string());
     /// ```
     /// # Examples: Merge two objects together.
@@ -29,7 +29,7 @@ impl Merge for serde_json::Value {
     ///
     /// let mut object1: Value = serde_json::from_str(r#"{"value1":"a","value2":"b"}"#).unwrap();
     /// let object2: Value = serde_json::from_str(r#"{"value1":"a","value2":"c","value3":"d"}"#).unwrap();
-    /// object1.merge(object2);
+    /// object1.merge(&object2);
     /// assert_eq!(r#"{"value1":"a","value2":"c","value3":"d"}"#,object1.to_string());
     /// ```
     /// # Examples: Merge an object into an array.
@@ -39,7 +39,7 @@ impl Merge for serde_json::Value {
     ///
     /// let mut array: Value = serde_json::from_str(r#"[]"#).unwrap();
     /// let object: Value = serde_json::from_str(r#"{"field1":"value1"}"#).unwrap();
-    /// array.merge(object);
+    /// array.merge(&object);
     /// assert_eq!(r#"[{"field1":"value1"}]"#,array.to_string());
     /// ```
     /// # Examples: Merge an array into an object.
@@ -49,11 +49,11 @@ impl Merge for serde_json::Value {
     ///
     /// let mut object: Value = serde_json::from_str(r#"{"field1":"value1"}"#).unwrap();
     /// let array: Value = serde_json::from_str(r#"["value2","value3"]"#).unwrap();
-    /// object.merge(array);
+    /// object.merge(&array);
     /// assert_eq!(r#"["value2","value3"]"#,object.to_string());
     /// ```
-    fn merge(&mut self, new_json_value: Value) {
-        merge(self, &new_json_value);
+    fn merge(&mut self, new_json_value: &Value) {
+        merge(self, new_json_value);
     }
     /// # Examples: Merge an array in an object in a specific position.
     /// ```
@@ -62,7 +62,7 @@ impl Merge for serde_json::Value {
     ///
     /// let mut object: Value = serde_json::from_str(r#"{"my_array":[{"a":"t"}]}"#).unwrap();
     /// let array: Value = serde_json::from_str(r#"["b","c"]"#).unwrap();
-    /// object.merge_in("/my_array", array.clone());
+    /// object.merge_in("/my_array", &array);
     /// assert_eq!(r#"{"my_array":[{"a":"t"},"b","c"]}"#, object.to_string());
     /// ```
     /// # Examples: Merge two objects together in a specific position.
@@ -72,7 +72,7 @@ impl Merge for serde_json::Value {
     ///
     /// let mut object1: Value = serde_json::from_str(r#"{"my_array":[{"a":"t"}]}"#).unwrap();
     /// let object2: Value = serde_json::from_str(r#"{"b":"c"}"#).unwrap();
-    /// object1.merge_in("/my_array/0/a", object2.clone());
+    /// object1.merge_in("/my_array/0/a", &object2);
     /// assert_eq!(r#"{"my_array":[{"a":{"b":"c"}}]}"#, object1.to_string());
     /// ```
     /// # Examples: Merge an object in an array in a specific position. If the position not exist, the object is added in the array.
@@ -81,7 +81,7 @@ impl Merge for serde_json::Value {
     /// use json_value_merge::Merge;
     ///
     /// let mut json_value: Value = serde_json::from_str(r#"[{"array1":[{"field":"value1"}]}]"#).unwrap();
-    /// let result = json_value.merge_in("/1", Value::String("value".to_string()));
+    /// let result = json_value.merge_in("/1", &Value::String("value".to_string()));
     ///
     /// assert_eq!(r#"[{"array1":[{"field":"value1"}]},"value"]"#,json_value.to_string());
     /// ```
@@ -91,7 +91,7 @@ impl Merge for serde_json::Value {
     /// use json_value_merge::Merge;
     ///
     /// let mut json_value: Value = serde_json::from_str(r#"[{"array1":[{"field":"value1"}]}]"#).unwrap();
-    /// let result = json_value.merge_in("/other_field", Value::String("value".to_string()));
+    /// let result = json_value.merge_in("/other_field", &Value::String("value".to_string()));
     ///
     /// assert!(result.is_err(), "The result should be an error because it's not possible to find or add an object in an array with a string field exept '*'");
     /// assert_eq!(r#"[{"array1":[{"field":"value1"}]}]"#,json_value.to_string());
@@ -102,13 +102,14 @@ impl Merge for serde_json::Value {
     /// use json_value_merge::Merge;
     ///
     /// let mut object: Value = Value::default();
-    /// object.merge_in("/field", Value::String("value".to_string()));
-    /// object.merge_in("/object", Value::Object(Map::default()));
-    /// object.merge_in("/array/1", Value::Object(Map::default()));
-    /// object.merge_in("/array/2", Value::Array(Vec::default()));
-    /// object.merge_in("/array/*", Value::String("wildcard".to_string()));
-    /// object.merge_in("/root/*/item", Value::String("my_item".to_string()));
-    /// object.merge_in("///empty", Value::Null);
+    /// object.merge_in("/field", &Value::String("value".to_string()));
+    /// object.merge_in("/object", &Value::Object(Map::default()));
+    /// object.merge_in("/array", &Value::Array(Vec::default()));
+    /// object.merge_in("/array/0", &Value::Object(Map::default()));
+    /// object.merge_in("/array/1", &Value::Array(Vec::default()));
+    /// object.merge_in("/array/*", &Value::String("wildcard".to_string()));
+    /// object.merge_in("/root/*/item", &Value::String("my_item".to_string()));
+    /// object.merge_in("///empty", &Value::Null);
     /// assert_eq!(r#"{"":{"":{"empty":null}},"array":[{},[],"wildcard"],"field":"value","object":{},"root":[{"item":"my_item"}]}"#, object.to_string());
     /// ```
     /// # Examples: Search and replace
@@ -117,17 +118,17 @@ impl Merge for serde_json::Value {
     /// use json_value_merge::Merge;
     ///
     /// let mut object: Value = serde_json::from_str(r#"{"":{"":{"empty":null}},"array":[{},[],"wildcard"],"field":"value","1":null,"root":[{"item":"my_item"}]}"#).unwrap();
-    /// 
-    /// object.merge_in("/field", Value::String("my_new_value".to_string()));
-    /// object.merge_in("/1", Value::String("first field".to_string()));
-    /// object.merge_in("/array/2", Value::String("position two".to_string()));
-    /// object.merge_in("///empty", Value::String("not_item".to_string()));
+    ///
+    /// object.merge_in("/field", &Value::String("my_new_value".to_string()));
+    /// object.merge_in("/1", &Value::String("first field".to_string()));
+    /// object.merge_in("/array/2", &Value::String("position two".to_string()));
+    /// object.merge_in("///empty", &Value::String("not_item".to_string()));
     /// assert_eq!(r#"{"":{"":{"empty":"not_item"}},"1":"first field","array":[{},[],"position two"],"field":"my_new_value","root":[{"item":"my_item"}]}"#, object.to_string());
     /// ```
-    fn merge_in(&mut self, json_pointer: &str, new_json_value: Value) -> io::Result<()> {
+    fn merge_in(&mut self, json_pointer: &str, new_value: &Value) -> io::Result<()> {
         let fields: Vec<&str> = json_pointer.split('/').skip(1).collect();
 
-        merge_in(self, fields, new_json_value)
+        merge_in(self, fields, new_value)
     }
 }
 
@@ -150,94 +151,88 @@ fn merge(a: &mut Value, b: &Value) {
     }
 }
 
-fn merge_in(json_value: &mut Value, fields: Vec<&str>, new_json_value: Value) -> io::Result<()> {
+fn merge_in(current_value: &mut Value, fields: Vec<&str>, new_value: &Value) -> io::Result<()> {
     if fields.is_empty() {
-        json_value.merge(new_json_value);
+        current_value.merge(new_value);
 
         return Ok(());
     }
 
-    let mut fields = fields.clone();
-    let field = fields.remove(0);
+    let mut fields_iter = fields.into_iter();
+    let first_field_opt = fields_iter.next();
+    let mut remaining_fields = fields_iter.collect::<Vec<&str>>();
 
-    // Not merge if fields is not empty
-    // Useful to merge_in "/" corresponding to the root of the object
-    if field.is_empty() && fields.is_empty() {
-        json_value.merge(new_json_value);
-
-        return Ok(());
-    }
-
-    // It's not possible to add or find an object field into an array
-    //  - current object: [{"field":"value"}]
-    //  - json pointer pattern : "/field_2"
-    //  - Result: raise an error
-    //
-    // The json pointer pattern for merging value into an array, should be:
-    // - /[0-9]+/field_2 => try to override a specific position if exist or add if not
-    // - / or /* => automaticaly add to the stack
-    match (&json_value, field.parse::<usize>().ok()) {
-        (Value::Array(_), None) => {
-            if field != "*"  {
-                return Err(io::Error::new(io::ErrorKind::NotFound, format!("The field '{}' can't be found or created in this array '{}'. Change the json pointer pattern.", field, &json_value.to_string())))
-            }
-        },
-        (_,_) => ()
+    let first_field: &str = match first_field_opt {
+        Some(field) => field,
+        None => "",
     };
 
-    match json_value.pointer_mut(format!("/{}", field).as_str()) {
-        // Find the field and the json_value_targeted.
-        Some(json_targeted) => {
-            if !fields.is_empty() {
-                merge_in(json_targeted, fields, new_json_value)?;
-            } else {
-                json_targeted.merge(new_json_value);
-            }
-        }
+    if first_field.is_empty() && remaining_fields.is_empty() {
+        current_value.merge(new_value);
+
+        return Ok(());
+    }
+
+    match current_value.pointer_mut(format!("/{}", first_field).as_str()) {
+        Some(value_targeted) => merge_in(value_targeted, remaining_fields, new_value),
         // The field is not find in the object
         // Create the new field and call the merge again on this new field
-        None => match (json_value.clone(), field, field.parse::<usize>().ok()) {
-            (Value::Array(vec),_,_) => {
-                json_value.merge(Value::Array(vec![Value::default()]));
-
-                let size = vec.len().to_string();
-                let mut new_fields = vec![size.as_str()];
-                new_fields.append(&mut fields);
-
-                merge_in(json_value, new_fields, new_json_value)?;
-            },
-            (_,"*",_) | (_,_,Some(_)) => {
-                json_value.merge(Value::Array(vec![Value::default()]));
-
-                let mut new_fields = vec!["0"];
-                new_fields.append(&mut fields);
-
-                merge_in(json_value, new_fields, new_json_value)?;
-            },
-            _ => {
-                let mut map = Map::default();
-                let mut new_field = field.to_string();
-
-                // ~0 and ~1 correspond with json pointer to ~ and /
-                if field.contains("~0") {
-                    new_field = new_field.replace("~0", "~");
-                }
-                if field.contains("~1") {
-                    new_field = new_field.replace("~1", "/");
+        None => match (&current_value, first_field.parse::<usize>().ok()) {
+            (Value::Array(vec), has_integer) => {
+                if first_field != "*" && has_integer.is_none() {
+                    return Err(io::Error::new(io::ErrorKind::NotFound, format!("The field '{}' can't be found or created in this array '{}'. Change the json pointer pattern.", first_field, &current_value.to_string())));
                 }
 
-                map.insert(new_field, Value::default());
-                json_value.merge(Value::Object(map));
+                let mut index: usize = 0;
+                let size = vec.len();
 
-                let mut new_fields = vec![field];
-                new_fields.append(&mut fields);
+                if first_field == "*" {
+                    index = size;
+                }
 
-                merge_in(json_value, new_fields, new_json_value)?;
+                if let Some(value_index) = has_integer {
+                    index = value_index;
+                }
+
+                if index >= size {
+                    current_value.merge(&Value::Array(vec![Value::default()]));
+                    index = size;
+                }
+
+                let index_string: String = format!("{}", index);
+
+                let mut new_fields = vec![index_string.as_str()];
+                new_fields.append(&mut remaining_fields);
+
+                merge_in(current_value, new_fields, new_value)
+            }
+            (_, _) => {
+                let default_value = match first_field {
+                    "*" => Value::Array(Vec::default()),
+                    _ => {
+                        let mut new_field = first_field.to_string();
+                        let mut map = Map::default();
+                        // ~0 and ~1 correspond with json pointer to ~ and /
+                        if first_field.contains("~0") {
+                            new_field = new_field.replace("~0", "~");
+                        }
+                        if first_field.contains("~1") {
+                            new_field = new_field.replace("~1", "/");
+                        }
+                        map.insert(new_field, Value::default());
+                        Value::Object(map)
+                    }
+                };
+
+                current_value.merge(&default_value);
+
+                let mut new_fields = vec![first_field];
+                new_fields.append(&mut remaining_fields);
+
+                merge_in(current_value, new_fields, new_value)
             }
         },
-    };
-
-    Ok(())
+    }
 }
 
 #[cfg(test)]
@@ -247,7 +242,7 @@ mod serde_json_value_updater_test {
     fn it_should_merge_array_string() {
         let mut first_json_value: Value = serde_json::from_str(r#"["a","b"]"#).unwrap();
         let secound_json_value: Value = serde_json::from_str(r#"["b","c"]"#).unwrap();
-        first_json_value.merge(secound_json_value);
+        first_json_value.merge(&secound_json_value);
         assert_eq!(r#"["a","b","b","c"]"#, first_json_value.to_string());
     }
     #[test]
@@ -256,7 +251,7 @@ mod serde_json_value_updater_test {
             serde_json::from_str(r#"[{"value":"a"},{"value":"b"}]"#).unwrap();
         let secound_json_value: Value =
             serde_json::from_str(r#"[{"value":"b"},{"value":"c"}]"#).unwrap();
-        first_json_value.merge(secound_json_value);
+        first_json_value.merge(&secound_json_value);
         assert_eq!(
             r#"[{"value":"a"},{"value":"b"},{"value":"b"},{"value":"c"}]"#,
             first_json_value.to_string()
@@ -268,7 +263,7 @@ mod serde_json_value_updater_test {
             serde_json::from_str(r#"{"value1":"a","value2":"b"}"#).unwrap();
         let secound_json_value: Value =
             serde_json::from_str(r#"{"value1":"a","value2":"c","value3":"d"}"#).unwrap();
-        first_json_value.merge(secound_json_value);
+        first_json_value.merge(&secound_json_value);
         assert_eq!(
             r#"{"value1":"a","value2":"c","value3":"d"}"#,
             first_json_value.to_string()
@@ -278,49 +273,61 @@ mod serde_json_value_updater_test {
     fn it_should_merge_string() {
         let mut value_a: Value = Value::String("a".to_string());
         let value_b: Value = Value::String("b".to_string());
-        value_a.merge(value_b.clone());
+        value_a.merge(&value_b);
         assert_eq!(value_b.to_string(), value_a.to_string());
     }
     #[test]
     fn it_should_merge_an_array_in_a_specifique_field_path() {
         let mut value_a: Value = serde_json::from_str(r#"{"my_array":[{"a":"t"}]}"#).unwrap();
         let value_b: Value = serde_json::from_str(r#"["b","c"]"#).unwrap();
-        value_a.merge_in("/my_array", value_b.clone()).unwrap();
+        value_a.merge_in("/my_array", &value_b).unwrap();
         assert_eq!(r#"{"my_array":[{"a":"t"},"b","c"]}"#, value_a.to_string());
     }
     #[test]
     fn it_should_merge_an_object_in_a_specifique_field_path() {
         let mut value_a: Value = serde_json::from_str(r#"{"my_array":[{"a":"t"}]}"#).unwrap();
         let value_b: Value = serde_json::from_str(r#"{"b":"c"}"#).unwrap();
-        value_a.merge_in("/my_array", value_b.clone()).unwrap();
+        value_a.merge_in("/my_array", &value_b).unwrap();
         assert_eq!(r#"{"my_array":[{"a":"t"},{"b":"c"}]}"#, value_a.to_string());
     }
     #[test]
     fn it_should_merge_in_an_object_in_specifique_path_position() {
         let mut value_a: Value = serde_json::from_str(r#"{"my_array":[{"a":"t"}]}"#).unwrap();
         let value_b: Value = serde_json::from_str(r#"{"b":"c"}"#).unwrap();
-        value_a.merge_in("/my_array/0", value_b.clone()).unwrap();
+        value_a.merge_in("/my_array/0", &value_b).unwrap();
         assert_eq!(r#"{"my_array":[{"a":"t","b":"c"}]}"#, value_a.to_string());
     }
     #[test]
     fn it_should_merge_an_array_in_specifique_path_position() {
         let mut value_a: Value = serde_json::from_str(r#"{"my_array":[{"a":"t"}]}"#).unwrap();
         let value_b: Value = serde_json::from_str(r#"{"b":"c"}"#).unwrap();
-        value_a.merge_in("/my_array/1", value_b.clone()).unwrap();
+        value_a.merge_in("/my_array/1", &value_b).unwrap();
         assert_eq!(r#"{"my_array":[{"a":"t"},{"b":"c"}]}"#, value_a.to_string());
+    }
+    #[test]
+    fn it_should_merge_an_array_with_wildcard() {
+        let mut value_a: Value =
+            serde_json::from_str(r#"{"my_array":[{"field1":"value1"},{"field2":"value1"}]}"#)
+                .unwrap();
+        let value_b: Value = serde_json::from_str(r#"{"b":"c"}"#).unwrap();
+        value_a.merge_in("/my_array/*/field3", &value_b).unwrap();
+        assert_eq!(
+            r#"{"my_array":[{"field1":"value1"},{"field2":"value1"},{"field3":{"b":"c"}}]}"#,
+            value_a.to_string()
+        );
     }
     #[test]
     fn it_should_merge_in_root_array() {
         let mut json_value: Value = serde_json::from_str(r#"["value"]"#).unwrap();
         let json_value_to_merge: Value = serde_json::from_str(r#"["new_value"]"#).unwrap();
-        json_value.merge_in("/", json_value_to_merge).unwrap();
+        json_value.merge_in("/", &json_value_to_merge).unwrap();
         assert_eq!(r#"["value","new_value"]"#, json_value.to_string());
     }
     #[test]
     fn it_should_merge_in_root_object() {
         let mut json_value: Value = serde_json::from_str(r#"{"field":"value"}"#).unwrap();
         let json_value_to_merge: Value = serde_json::from_str(r#"{"field2":"value2"}"#).unwrap();
-        json_value.merge_in("/", json_value_to_merge).unwrap();
+        json_value.merge_in("/", &json_value_to_merge).unwrap();
         assert_eq!(
             r#"{"field":"value","field2":"value2"}"#,
             json_value.to_string()
@@ -330,7 +337,34 @@ mod serde_json_value_updater_test {
     fn it_should_merge_null_in_specifique_path() {
         let mut json_value: Value = serde_json::from_str(r#"{"field":{"child":"value"}}"#).unwrap();
         let json_value_null: Value = Value::Null;
-        json_value.merge_in("/field", json_value_null).unwrap();
+        json_value.merge_in("/field", &json_value_null).unwrap();
         assert_eq!(r#"{"field":null}"#, json_value.to_string());
+    }
+    #[test]
+    fn it_should_merge_in_object_with_wildcard() {
+        let mut json_value: Value =
+            serde_json::from_str(r#"{"my_object":{"field1":null}}"#).unwrap();
+        let value_b: Value = serde_json::from_str(r#"{"b":"c"}"#).unwrap();
+        json_value
+            .merge_in("/my_object/field1/*/field2", &value_b)
+            .unwrap();
+        assert_eq!(
+            r#"{"my_object":{"field1":[{"field2":{"b":"c"}}]}}"#,
+            json_value.to_string()
+        );
+    }
+    #[test]
+    fn it_should_not_merge_in_an_array_without_wildcard_or_integer() {
+        let mut value_a: Value =
+            serde_json::from_str(r#"{"my_array":[{"field1":"value1"}]}"#).unwrap();
+        let value_b: Value = serde_json::from_str(r#"{"a":"b"}"#).unwrap();
+        let result = value_a.merge_in("/my_array/T/field2", &value_b);
+        match result {
+            Ok(_) => assert!(
+                false,
+                "It's not possible to merge into an array without a wildcard or an integer."
+            ),
+            Err(_) => assert!(true),
+        }
     }
 }
