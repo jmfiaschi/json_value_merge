@@ -138,16 +138,17 @@ impl Merge for serde_json::Value {
 
 fn merge(a: &mut Value, b: &Value) {
     match (a, b) {
-        (Value::Object(ref mut a), &Value::Object(ref b)) => {
+        (Value::Object(ref mut a), Value::Object(ref b)) => {
             for (k, v) in b {
-                merge(a.entry(k).or_insert(Value::Null), v);
+                merge(a.entry(k).or_insert_with(|| Value::Null), v);
             }
         }
-        (Value::Array(ref mut a), &Value::Array(ref b)) => {
-            a.extend(b.clone());
+        (Value::Array(ref mut a), Value::Array(ref b)) => {
+            a.reserve(b.len());
+            a.extend(b.iter().cloned());
         }
-        (Value::Array(ref mut a), &Value::Object(ref b)) => {
-            a.extend([Value::Object(b.clone())]);
+        (Value::Array(ref mut a), Value::Object(_)) => {
+            a.push(b.clone());
         }
         (a, b) => {
             *a = b.clone();
@@ -164,7 +165,7 @@ fn merge_in(current_value: &mut Value, fields: Vec<&str>, new_value: &Value) -> 
 
     let mut fields_iter = fields.into_iter();
     let first_field_opt = fields_iter.next();
-    let mut remaining_fields = fields_iter.collect::<Vec<&str>>();
+    let remaining_fields = fields_iter.collect::<Vec<&str>>();
 
     let first_field: &str = match first_field_opt {
         Some(field) => field,
@@ -182,41 +183,37 @@ fn merge_in(current_value: &mut Value, fields: Vec<&str>, new_value: &Value) -> 
         // The field is not find in the object
         // Create the new field and call the merge again on this new field
         None => match (&current_value, first_field.parse::<usize>().ok()) {
-            (Value::Array(vec), None) => {
-                match first_field {
-                    "*" => {
-                        let index = vec.len();
-                        let index_string: String = format!("{}", index);
+            (Value::Array(vec), None) => match first_field {
+                "*" => {
+                    let index = vec.len();
+                    let index_string = index.to_string();
 
-                        current_value.merge(&Value::Array(vec![Value::default()]));
+                    current_value.merge(&Value::Array(vec![Value::default()]));
 
-                        let mut new_fields = vec![index_string.as_str()];
-                        new_fields.append(&mut remaining_fields);
+                    let mut new_fields = Vec::with_capacity(1 + remaining_fields.len());
+                    new_fields.push(index_string.as_str());
+                    new_fields.extend(remaining_fields);
 
-                        merge_in(current_value, new_fields, new_value)
-                    }
-                    _ => {
-                        let mut new_field = first_field.to_string();
-                        let mut map = Map::default();
-
-                        // ~0 and ~1 correspond with json pointer to ~ and /
-                        if first_field.contains("~0") {
-                            new_field = new_field.replace("~0", "~");
-                        }
-                        if first_field.contains("~1") {
-                            new_field = new_field.replace("~1", "/");
-                        }
-
-                        map.insert(new_field, Value::default());
-                        *current_value = Value::Object(map);
-
-                        let mut new_fields = vec![first_field];
-                        new_fields.append(&mut remaining_fields);
-
-                        merge_in(current_value, new_fields, new_value)
-                    }
+                    merge_in(current_value, new_fields, new_value)
                 }
-            }
+                _ => {
+                    let new_field = if first_field.contains('~') {
+                        first_field.replace("~0", "~").replace("~1", "/")
+                    } else {
+                        first_field.to_string()
+                    };
+
+                    let mut map = Map::with_capacity(1);
+                    map.insert(new_field, Value::default());
+                    *current_value = Value::Object(map);
+
+                    let mut new_fields = Vec::with_capacity(1 + remaining_fields.len());
+                    new_fields.push(first_field);
+                    new_fields.extend(remaining_fields);
+
+                    merge_in(current_value, new_fields, new_value)
+                }
+            },
             (Value::Array(vec), Some(field_index)) => {
                 let size = vec.len();
                 let mut index = field_index;
@@ -226,35 +223,33 @@ fn merge_in(current_value: &mut Value, fields: Vec<&str>, new_value: &Value) -> 
                     index = size;
                 }
 
-                let index_string: String = format!("{}", index);
-                let mut new_fields = vec![index_string.as_str()];
-                new_fields.append(&mut remaining_fields);
+                let index_string = index.to_string();
+                let mut new_fields = Vec::with_capacity(1 + remaining_fields.len());
+                new_fields.push(index_string.as_str());
+                new_fields.extend(remaining_fields);
 
                 merge_in(current_value, new_fields, new_value)
             }
             (_, Some(_)) => {
-                current_value.merge(&Value::Array(vec![Value::default()]));
+                current_value.merge(&Value::Array(Vec::new()));
 
-                let mut new_fields = vec!["0"];
-                new_fields.append(&mut remaining_fields);
+                let mut new_fields = Vec::with_capacity(1 + remaining_fields.len());
+                new_fields.push("0");
+                new_fields.extend(remaining_fields);
 
                 merge_in(current_value, new_fields, new_value)
             }
             (_, None) => {
                 let value = match first_field {
-                    "*" => Value::Array(Vec::default()),
+                    "*" => Value::Array(Vec::new()),
                     _ => {
-                        let mut new_field = first_field.to_string();
-                        let mut map = Map::default();
+                        let new_field = if first_field.contains('~') {
+                            first_field.replace("~0", "~").replace("~1", "/")
+                        } else {
+                            first_field.to_string()
+                        };
 
-                        // ~0 and ~1 correspond with json pointer to ~ and /
-                        if first_field.contains("~0") {
-                            new_field = new_field.replace("~0", "~");
-                        }
-                        if first_field.contains("~1") {
-                            new_field = new_field.replace("~1", "/");
-                        }
-
+                        let mut map = Map::with_capacity(1);
                         map.insert(new_field, Value::default());
                         Value::Object(map)
                     }
@@ -262,8 +257,9 @@ fn merge_in(current_value: &mut Value, fields: Vec<&str>, new_value: &Value) -> 
 
                 current_value.merge(&value);
 
-                let mut new_fields = vec![first_field];
-                new_fields.append(&mut remaining_fields);
+                let mut new_fields = Vec::with_capacity(1 + remaining_fields.len());
+                new_fields.push(first_field);
+                new_fields.extend(remaining_fields);
 
                 merge_in(current_value, new_fields, new_value)
             }
