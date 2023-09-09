@@ -58,7 +58,6 @@ jobs:
       - uses: nelonoel/branch-name@v1.0.1
       - uses: actions-rs/toolchain@v1
         with:
-
           toolchain: stable
           override: true
       - uses: Swatinem/rust-cache@v1
@@ -82,6 +81,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - run: make setup
       - name: Install Semantic Release
         run: |
           sudo npm install semantic-release -g
