@@ -1,3 +1,10 @@
+# [2.0.0-beta.2](https://github.com/jmfiaschi/json_value_merge/compare/v2.0.0-beta.1...v2.0.0-beta.2) (2023-09-14)
+
+
+### Features
+
+* **perf:** force new version ([#17](https://github.com/jmfiaschi/json_value_merge/issues/17)) ([ff38437](https://github.com/jmfiaschi/json_value_merge/commit/ff3843743b44b842e56263a9c297e90577b3f9c1))
+
 # [2.0.0-beta.1](https://github.com/jmfiaschi/json_value_merge/compare/v1.1.2...v2.0.0-beta.1) (2023-09-14)
 
 
