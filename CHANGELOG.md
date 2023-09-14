@@ -1,18 +1,21 @@
-# [1.2.0](https://github.com/jmfiaschi/json_value_merge/compare/v1.1.2...v1.2.0) (2023-09-09)
+# [2.0.0-beta.2](https://github.com/jmfiaschi/json_value_merge/compare/v2.0.0-beta.1...v2.0.0-beta.2) (2023-09-14)
 
 
 ### Features
 
 * **perf:** force new version ([#17](https://github.com/jmfiaschi/json_value_merge/issues/17)) ([ff38437](https://github.com/jmfiaschi/json_value_merge/commit/ff3843743b44b842e56263a9c297e90577b3f9c1))
 
-# [1.2.0-beta.1](https://github.com/jmfiaschi/json_value_merge/compare/v1.1.2...v1.2.0-beta.1) (2023-09-09)
+# [2.0.0-beta.1](https://github.com/jmfiaschi/json_value_merge/compare/v1.1.2...v2.0.0-beta.1) (2023-09-14)
 
 
-### Features
+### Performance Improvements
 
-* **makefile:** add version command ([5f15597](https://github.com/jmfiaschi/json_value_merge/commit/5f15597aebb56149b3f41a0fa8f1be234194c70e))
-* **makefile:** add version command ([8e155df](https://github.com/jmfiaschi/json_value_merge/commit/8e155df16166bed832e0bb10407e4bee97f56d0a))
-* **perf:** force new version ([aa7afde](https://github.com/jmfiaschi/json_value_merge/commit/aa7afdee6d45b871cafe8e46993c4ff5e72843a8))
+* **merge:** apply pointer in arguments and allow to replace array by object ([36ec2f9](https://github.com/jmfiaschi/json_value_merge/commit/36ec2f99eb55a48dfe8fba20c4c145b82a2e215e))
+
+
+### BREAKING CHANGES
+
+* **merge:** apply pointer in arguments and remove the previous declaration
 
 ## [1.1.1](https://github.com/jmfiaschi/json_value_merge/compare/v1.1.0...v1.1.1) (2021-12-06)
 
