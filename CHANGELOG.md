@@ -1,3 +1,15 @@
+# [2.0.0-beta.1](https://github.com/jmfiaschi/json_value_merge/compare/v1.1.2...v2.0.0-beta.1) (2023-09-14)
+
+
+### Performance Improvements
+
+* **merge:** apply pointer in arguments and allow to replace array by object ([36ec2f9](https://github.com/jmfiaschi/json_value_merge/commit/36ec2f99eb55a48dfe8fba20c4c145b82a2e215e))
+
+
+### BREAKING CHANGES
+
+* **merge:** apply pointer in arguments and remove the previous declaration
+
 # [1.2.0](https://github.com/jmfiaschi/json_value_merge/compare/v1.1.2...v1.2.0) (2023-09-09)
 
 
