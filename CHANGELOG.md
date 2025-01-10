@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/jmfiaschi/json_value_merge/compare/v2.0.0...v2.0.1) (2025-01-10)
+
+
+### Bug Fixes
+
+* **merge:** Improve perf ([ab43db7](https://github.com/jmfiaschi/json_value_merge/commit/ab43db714d79ef04fd091c3228b8a78ae5d54c8d))
+
 # [2.0.0](https://github.com/jmfiaschi/json_value_merge/compare/v1.2.0...v2.0.0) (2023-09-14)
 
 

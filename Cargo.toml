@@ -1,6 +1,6 @@
 [package]
 name = "json_value_merge"
-version = "2.0.0"
+version = "2.0.1"
 authors = ["Jean-Marc Fiaschi <jm.fiaschi@gmail.com>"]
 edition = "2018"
 description = "Interface to merge serde_json::Value objects."
