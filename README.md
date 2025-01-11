@@ -6,16 +6,19 @@
 
 Give an interface to merge two json_serde::Value together.
 
+# Getting Started
+
 ## Installation
 
- ```Toml
+Add the following line to your Cargo.toml:
+```toml
 [dependencies]
-json_value_merge = "2.0"
+json_value_merge = "x.y.z" # Replace with the latest version
 ```
 
-## Usage
+## Quick Start
 
-Merge two arrays:
+### Merge two arrays
 
 ```rust
 extern crate json_value_merge;
@@ -31,7 +34,9 @@ use serde_json::Value;
 }
 ```
 
-Merge two objects:
+---
+
+### Merge two objects
 
 ```rust
 extern crate json_value_merge;
@@ -52,7 +57,9 @@ use serde_json::Value;
 }
 ```
 
-Merge two arrays in a specifique position:
+---
+
+### Merge two arrays in a specifique position:
 
 ```rust
 extern crate json_value_merge;
@@ -68,7 +75,9 @@ use serde_json::Value;
 }
 ```
 
-Merge two objects in a specifique position:
+---
+
+### Merge two objects in a specifique position
 
 ```rust
 extern crate json_value_merge;
@@ -84,7 +93,9 @@ use serde_json::Value;
 }
 ```
 
-Build new object:
+---
+
+### Build new object
 
 ```rust
 extern crate json_value_merge;
@@ -105,7 +116,9 @@ use serde_json::Value;
 }
 ```
 
-Replace an array by an object:
+---
+
+### Replace an array by an object
 
 ```rust
 extern crate json_value_merge;
@@ -120,18 +133,35 @@ use serde_json::Value;
 }
 ```
 
+---
+
 ## Useful link
 
 * [Benchmark report](https://jmfiaschi.github.io/json_value_merge/bench/main/)
 * [Package](https://crates.io/crates/json_value_merge)
 
+---
+
 ## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+Contributions are welcome!
 
-Please make sure to update tests as appropriate.
+To contribute:
+
+1. Fork the repository and create your branch (git checkout -b feature/my-feature).
+2. Commit your changes (git commit -m 'Add some feature').
+3. Push to the branch (git push origin feature/my-feature).
+4. Open a pull request.
+
+For major changes, please open an issue first to discuss your proposal.
+
+Please ensure that tests are added or updated as appropriate.
+
+---
 
 ## License
 
-[Apache](https://choosealicense.com/licenses/apache-2.0/)
-[MIT](https://choosealicense.com/licenses/mit/)
+Licensed under either of the following, at your option:
+
+* [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)
+* [MIT License](https://choosealicense.com/licenses/mit/)
